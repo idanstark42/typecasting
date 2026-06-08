@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phaser Menu Background Animation</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Special Elite', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* The container holding our animated words */
+        #animation-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Placeholder for your actual Phaser Game Title / Buttons */
+        .menu-interface {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            pointer-events: none; /* Allows clicking through if needed */
+        }
+
+        .menu-interface h1 {
+            font-size: 4rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #00ffcc;
+            margin-bottom: 20px;
+        }
+
+        /* Style for the dynamically created typing elements */
+        .typing-word {
+            position: absolute;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: opacity 1s ease-out;
+        }
+
+        /* Visual cursor effect */
+        .typing-word::after {
+            content: '_';
+            animation: blink 0.4s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="animation-container"></div>
+
+    <div class="menu-interface">
+    </div>
+
+    <script>
+        const container = document.getElementById('animation-container');
+        
+        // Pool of spells and abilities to randomly display in the background
+        const wordList = [
+            "missile", "lightning",
+            "pull", "push", "teleport", "hover", "invisibility", "light", "darkness",
+            "slowmotion", "wall", "shield", "freeze", "speed", "feather",
+        ];
+
+        function createTypingAnimation() {
+            // 1. Pick a random word
+            const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+            
+            // 2. Create the element
+            const wordEl = document.createElement('div');
+            wordEl.classList.add('typing-word');
+            container.appendChild(wordEl);
+
+            // 3. Determine random "distance" (Size + Opacity tied together for depth)
+            const depthFactor = Math.random(); // Value between 0 and 1
+            const fontSize = 12 + (depthFactor * 24); // 12px to 36px
+            const opacity = 0.15 + (depthFactor * 0.6); // 0.15 to 0.75 (keeps it background-friendly)
+            
+            wordEl.style.fontSize = `${fontSize}px`;
+            wordEl.style.opacity = opacity;
+
+            // 4. Random Positioning (with padding to keep text mostly on-screen)
+            const posX = Math.random() * (window.innerWidth - 250);
+            const posY = Math.random() * (window.innerHeight - 50);
+            wordEl.style.left = `${posX}px`;
+            wordEl.style.top = `${posY}px`;
+
+            // 5. Typewriter Effect Logic
+            let currentLetterIndex = 0;
+            // Typing speed scales slightly with size so smaller background words type faster/slower if desired
+            const typingSpeed = 60 + Math.random() * 60; 
+
+            function typeNextLetter() {
+                if (currentLetterIndex <= randomWord.length) {
+                    wordEl.textContent = randomWord.substring(0, currentLetterIndex);
+                    currentLetterIndex++;
+                    setTimeout(typeNextLetter, typingSpeed);
+                } else {
+                    // 6. Typing complete: Hold momentarily, fade out, then remove
+                    setTimeout(() => {
+                        wordEl.style.opacity = '0';
+                        // Wait for the 1s CSS opacity transition to finish before deleting DOM node
+                        setTimeout(() => {
+                            wordEl.remove();
+                        }, 1000);
+                    }, 1500); // Time the word stays fully typed before fading
+                }
+            }
+
+            // Start typing this specific word
+            typeNextLetter();
+        }
+
+        // 7. Loop the animation dynamically
+        // Spawns a new word every 400 to 900ms to keep the background lively but unpredictable
+        function spawnLoop() {
+            createTypingAnimation();
+            const nextSpawnDelay = 400 + Math.random() * 500;
+            setTimeout(spawnLoop, nextSpawnDelay);
+        }
+
+        // Boot up the loop
+        spawnLoop();
+
+        // Clean up handling if the window resizes drastically
+        window.addEventListener('resize', () => {
+            // Optional: clear container if scaling issues occur, 
+            // but keeping it running natively handles resizing fine.
+        });
+    </script>
+</body>
+</html>
