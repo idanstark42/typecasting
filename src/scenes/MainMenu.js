@@ -40,6 +40,8 @@ export class MainMenu extends Scene
             `;
             document.head.appendChild(styleSheet);
         }
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height / 2;
 
         // 2. Create the DOM container element
         const bgContainer = this.add.dom(0, 0).createFromHTML('<div id="animation-container"></div>');
@@ -48,14 +50,10 @@ export class MainMenu extends Scene
         // 3. Run your typing logic inside Phaser
         this.startTypingAnimation();
 
-        // logo
-        this.add.image(512, 300, 'logo').setScale(0.8).setOrigin(0.5);
-
         // 4. Main Menu Text Elements
-        this.add.text(512, 460, 'click anywhere to start', {
+        this.add.text(centerX, centerY, 'click anywhere to start', {
             fontFamily: 'Special Elite', fontSize: 48, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
+            stroke: '#000000', strokeThickness: 8
         }).setOrigin(0.5);
 
         this.input.once('pointerdown', () => {

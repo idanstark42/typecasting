@@ -39,8 +39,10 @@ const config = {
     }
 };
 
-const StartGame = (parent) => {
-    return new Game({ ...config, parent });
+const StartGame = () => {
+    return new Game({ ...config });
 }
 
-export default StartGame;
+document.addEventListener('DOMContentLoaded', () => {
+    const game = StartGame();
+});
