@@ -1,5 +1,5 @@
 // LevelManager.js
-export const LevelManager = {
+const LevelManager = {
     loadLevel: (scene, mapKey, tilesetKey, tilesetImage) => {
         const map = scene.make.tilemap({ key: mapKey });
         const tileset = map.addTilesetImage(tilesetKey, tilesetImage);
@@ -18,3 +18,5 @@ export const LevelManager = {
         return objectLayer.objects.find(obj => obj.name === name);
     }
 };
+
+export default LevelManager

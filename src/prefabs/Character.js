@@ -2,19 +2,19 @@ import { GameObjects } from 'phaser';
 import NormalMotionCtrl from '../systems/ctrl/motion/NormalMotionCtrl'
 
 const ANIMATIONS = {
-    'idle': { filename: 'Idle', frames: 8, repeat: true, frameRate: 6 },
-    'walk': { filename: 'Walk', frames: 7, repeat: true, frameRate: 12 },
-    'run': { filename: 'Run', frames: 8, repeat: true, frameRate: 12 },
-    'attack': { filename: 'Attack_1', frames: 7, repeat: false, frameRate: 12 },
-    'hurt': { filename: 'Hurt', frames: 4, repeat: false, frameRate: 12 },
-    'die': { filename: 'Dead', frames: 4, repeat: false, frameRate: 12 },
+    'idle': { filename: 'Idle', frames: 8, repeat: true, frameRate: 6, lock: false },
+    'walk': { filename: 'Walk', frames: 7, repeat: true, frameRate: 12, lock: false },
+    'run': { filename: 'Run', frames: 8, repeat: true, frameRate: 12, lock: false },
+    'cast': { filename: 'Attack_1', frames: 7, repeat: false, frameRate: 12, lock: true, trigger: 'SPELL_CAST_END' },
+    'hurt': { filename: 'Hurt', frames: 4, repeat: false, frameRate: 12, lock: true },
+    'die': { filename: 'Dead', frames: 4, repeat: false, frameRate: 12, lock: true },
 };
 
 const WIDTH = 30
 const HEIGHT = 70
 const SPRITE_SIZE = 128
 
-export class Character extends GameObjects.Sprite {
+export default class Character extends GameObjects.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, 'wizard-idle'); // Matches the key from preload
         scene.add.existing(this);
@@ -32,6 +32,7 @@ export class Character extends GameObjects.Sprite {
         this.play('idle');
 
         this.motionCtrl = new NormalMotionCtrl(this);
+        this.locked = false
     }
 
     static preload(scene) {
@@ -54,16 +55,23 @@ export class Character extends GameObjects.Sprite {
         });
 
         // Specific override for attack to return to idle
-        this.on('animationcomplete', (anim) => {
-            if (anim.key === 'attack') {
-                this.play('idle');
+        this.on('animationcomplete', ({ key }) => {
+            if (ANIMATIONS[key].lock) {
+                this.locked = false
+            }
+            if (ANIMATIONS[key].trigger) {
+                scene.events.emit(ANIMATIONS[key].trigger)
             }
         });
     }
 
     changeAnimation(key) {
+        if (this.locked && !ANIMATIONS[key].lock) {
+            return
+        }
         if (this.anims.currentAnim?.key !== key) {
             this.play(key);
+            this.locked = ANIMATIONS[key].lock
         }
     }
 

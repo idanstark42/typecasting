@@ -14,6 +14,11 @@ export default class NormalMotionCtrl extends MotionCtrlBase {
     update() {
         const { character, cursors, space } = this;
 
+        if (character.locked) {
+            character.body.setVelocityX(0); // Stop movement
+            return; 
+        }
+
         // Reset jump count when on floor
         if (character.body.blocked.down) {
             this.jumpCount = 0;

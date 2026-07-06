@@ -59,6 +59,10 @@ export class MainMenu extends Scene
         this.input.once('pointerdown', () => {
             this.scene.start('Game');
         });
+
+        this.input.keyboard.on('keydown', () => {
+            this.scene.start('Game');
+        });
     }
 
     startTypingAnimation() {
