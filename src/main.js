@@ -21,8 +21,8 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 }, // Individual prefab entities govern their own localized gravity vectors
-            debug: false       // Set to true if you need to visually debug collision boundaries
+            gravity: { y: 1000 }, // Individual prefab entities govern their own localized gravity vectors
+            debug: true       // Set to true if you need to visually debug collision boundaries
         }
     },
     // GameUI is added alongside the others so it can be controlled natively by the Director
